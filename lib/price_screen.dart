@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'coin_data.dart';
 import 'dart:io' show Platform; //import only platform class
+import 'package:bitcoin_ticker/services/crypto_prices.dart';
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class _PriceScreenState extends State<PriceScreen> {
     return CupertinoPicker(
       onSelectedItemChanged: (int value) {
         print(value);
+        updateUI();
       },
       itemExtent: 30,
       children: currenciesList.map((String value) {
@@ -53,6 +55,12 @@ class _PriceScreenState extends State<PriceScreen> {
         );
       }).toList(),
     );
+  }
+
+  void updateUI() async {
+    CryptoPrices price = CryptoPrices();
+    var cryptoPrice = await price.getPrices('BTC');
+    print(cryptoPrice);
   }
 
   @override
