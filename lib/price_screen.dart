@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'coin_data.dart';
+import 'dart:io' show Platform; //import only platform class
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -8,18 +9,60 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  List widgets = currenciesList.map((String value) {
-    return Text(
-      value,
-      style: TextStyle(color: Colors.white),
+  //ios picker
+  CupertinoPicker iOSPicker() {
+    return CupertinoPicker(
+      onSelectedItemChanged: (int value) {
+        print(value);
+      },
+      itemExtent: 30,
+      children: currenciesList.map((String value) {
+        return Text(
+          value,
+          style: TextStyle(color: Colors.white),
+        );
+      }).toList(),
     );
-  }).toList();
+  }
+
+  //android picker
+  var selectedCurrency = 'USD';
+  DropdownButton<String> androidDropDown() {
+    return DropdownButton<String>(
+      dropdownColor: Colors.blue,
+      value: selectedCurrency,
+      icon: Icon(Icons.arrow_downward),
+      iconSize: 24,
+      elevation: 16,
+      style: TextStyle(color: Colors.white, fontSize: 20),
+      underline: Container(
+        height: 2,
+        color: Colors.deepPurpleAccent,
+      ),
+      onChanged: (String newValue) {
+        setState(() {
+          selectedCurrency = newValue;
+          print(selectedCurrency);
+        });
+      },
+      items: currenciesList.map((String value) {
+        //loop currencies, create text widgets
+        return DropdownMenuItem(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('🤑 Coin Ticker'),
+        centerTitle: true,
+        title: Text(
+          '🤑 Coin Ticker',
+        ),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -54,13 +97,7 @@ class _PriceScreenState extends State<PriceScreen> {
             child: Container(
               width: 100,
               alignment: Alignment.center,
-              child: CupertinoPicker(
-                onSelectedItemChanged: (int value) {
-                  print(value);
-                },
-                itemExtent: 30,
-                children: widgets,
-              ),
+              child: Platform.isIOS ? iOSPicker() : androidDropDown(),
             ),
           ),
         ],
@@ -68,28 +105,3 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 }
-
-// DropdownButton<String>(
-// dropdownColor: Colors.blue,
-// value: selectedCurrency,
-// icon: Icon(Icons.arrow_downward),
-// iconSize: 24,
-// elevation: 16,
-// style: TextStyle(color: Colors.white, fontSize: 20),
-// underline: Container(
-// height: 2,
-// color: Colors.deepPurpleAccent,
-// ),
-// onChanged: (String newValue) {
-// setState(() {
-// selectedCurrency = newValue;
-// print(selectedCurrency);
-// });
-// },
-// items: currenciesList.map((String value) {
-// return DropdownMenuItem(
-// value: value,
-// child: Text(value),
-// );
-// }).toList(),
-// ),
