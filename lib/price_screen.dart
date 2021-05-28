@@ -58,7 +58,7 @@ class _PriceScreenState extends State<PriceScreen> {
   }
 
 //android picker
-  DropdownButton<String> androidDropDown(selectedCurrency) {
+  DropdownButton androidDropDown() {
     return DropdownButton<String>(
       dropdownColor: Colors.blue,
       value: selectedCurrency,
@@ -73,7 +73,7 @@ class _PriceScreenState extends State<PriceScreen> {
       onChanged: (String newValue) {
         setState(() {
           selectedCurrency = newValue;
-          print(selectedCurrency);
+          updatePrices(selectedCurrency);
         });
       },
       items: currenciesList.map((String value) {
@@ -119,9 +119,7 @@ class _PriceScreenState extends State<PriceScreen> {
             child: Container(
               width: 100,
               alignment: Alignment.center,
-              child: Platform.isIOS
-                  ? iOSPicker()
-                  : androidDropDown(selectedCurrency),
+              child: Platform.isIOS ? iOSPicker() : androidDropDown(),
             ),
           ),
         ],
