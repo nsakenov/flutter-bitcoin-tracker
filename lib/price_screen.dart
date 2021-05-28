@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'coin_data.dart';
 import 'dart:io' show Platform; //import only platform class
 import 'package:bitcoin_ticker/services/crypto_prices.dart';
+import 'components/build_card.dart';
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -10,12 +11,41 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  //ios picker
+  var selectedCurrency = 'USD';
+  int btcPrice;
+  int ethPrice;
+  int ltcPrice;
+
+  void updateUI(dynamic btcJson, dynamic ethJson, dynamic ltcJson) {
+    setState(() {
+      btcPrice = btcJson['rate'].toInt();
+      ethPrice = ethJson['rate'].toInt();
+      ltcPrice = ltcJson['rate'].toInt();
+      print('$btcPrice, $ethPrice, $ltcPrice');
+    });
+  }
+
+  void updatePrices(String currency) async {
+    CryptoPrices price = CryptoPrices();
+    var btcJson = await price.getPrices('BTC', selectedCurrency);
+    var ethJson = await price.getPrices('ETH', selectedCurrency);
+    var ltcJson = await price.getPrices('LTC', selectedCurrency);
+    updateUI(btcJson, ethJson, ltcJson);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updatePrices(selectedCurrency);
+  }
+
+//widgets//
+//ios picker
   CupertinoPicker iOSPicker() {
     return CupertinoPicker(
       onSelectedItemChanged: (int value) {
-        print(value);
-        updateUI();
+        selectedCurrency = currenciesList[value];
+        updatePrices(selectedCurrency);
       },
       itemExtent: 30,
       children: currenciesList.map((String value) {
@@ -27,9 +57,8 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  //android picker
-  var selectedCurrency = 'USD';
-  DropdownButton<String> androidDropDown() {
+//android picker
+  DropdownButton<String> androidDropDown(selectedCurrency) {
     return DropdownButton<String>(
       dropdownColor: Colors.blue,
       value: selectedCurrency,
@@ -57,12 +86,6 @@ class _PriceScreenState extends State<PriceScreen> {
     );
   }
 
-  void updateUI() async {
-    CryptoPrices price = CryptoPrices();
-    var cryptoPrice = await price.getPrices('BTC');
-    print(cryptoPrice);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,27 +97,18 @@ class _PriceScreenState extends State<PriceScreen> {
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Padding(
             padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = ? USD',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                buildCard('BTC', btcPrice, selectedCurrency),
+                SizedBox(height: 10),
+                buildCard('ETH', ethPrice, selectedCurrency),
+                SizedBox(height: 10),
+                buildCard('LTC', ltcPrice, selectedCurrency),
+              ],
             ),
           ),
           Container(
@@ -105,7 +119,9 @@ class _PriceScreenState extends State<PriceScreen> {
             child: Container(
               width: 100,
               alignment: Alignment.center,
-              child: Platform.isIOS ? iOSPicker() : androidDropDown(),
+              child: Platform.isIOS
+                  ? iOSPicker()
+                  : androidDropDown(selectedCurrency),
             ),
           ),
         ],
