@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Card buildCard(String crypto, int btcValue, String selectedCurrency) {
   return Card(
-    color: Colors.lightBlueAccent,
+    color: Color(0xFF3F51B5),
     elevation: 5.0,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(10.0),
