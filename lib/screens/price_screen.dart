@@ -1,20 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'coin_data.dart';
+import '../utilities/coin_data.dart';
 import 'dart:io' show Platform; //import only platform class
 import 'package:bitcoin_ticker/services/crypto_prices.dart';
-import 'components/build_card.dart';
+import '../components/build_card.dart';
 
 class PriceScreen extends StatefulWidget {
+  PriceScreen({@required this.json});
+  final json;
+
   @override
   _PriceScreenState createState() => _PriceScreenState();
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  var selectedCurrency = 'AUD';
+  var selectedCurrency = 'USD';
   int btcPrice;
   int ethPrice;
   int ltcPrice;
+
+  @override
+  void initState() {
+    super.initState();
+    updateUI(widget.json);
+  }
 
   void updateUI(dynamic json) {
     setState(() {
@@ -31,16 +40,11 @@ class _PriceScreenState extends State<PriceScreen> {
     updateUI(json);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    updatePrices(selectedCurrency);
-  }
-
 //widgets//
 //ios picker
   CupertinoPicker iOSPicker() {
     return CupertinoPicker(
+      scrollController: FixedExtentScrollController(initialItem: 19),
       onSelectedItemChanged: (int value) {
         selectedCurrency = currenciesList[value];
         updatePrices(selectedCurrency);
