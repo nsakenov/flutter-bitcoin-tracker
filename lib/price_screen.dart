@@ -11,26 +11,24 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  var selectedCurrency = 'USD';
+  var selectedCurrency = 'AUD';
   int btcPrice;
   int ethPrice;
   int ltcPrice;
 
-  void updateUI(dynamic btcJson, dynamic ethJson, dynamic ltcJson) {
+  void updateUI(dynamic json) {
     setState(() {
-      btcPrice = btcJson['rate'].toInt();
-      ethPrice = ethJson['rate'].toInt();
-      ltcPrice = ltcJson['rate'].toInt();
+      btcPrice = double.parse(json[0]['price']).toInt();
+      ethPrice = double.parse(json[1]['price']).toInt();
+      ltcPrice = double.parse(json[2]['price']).toInt();
       print('$btcPrice, $ethPrice, $ltcPrice');
     });
   }
 
   void updatePrices(String currency) async {
     CryptoPrices price = CryptoPrices();
-    var btcJson = await price.getPrices('BTC', selectedCurrency);
-    var ethJson = await price.getPrices('ETH', selectedCurrency);
-    var ltcJson = await price.getPrices('LTC', selectedCurrency);
-    updateUI(btcJson, ethJson, ltcJson);
+    var json = await price.getPrices('BTC,ETH,LTC', selectedCurrency);
+    updateUI(json);
   }
 
   @override
