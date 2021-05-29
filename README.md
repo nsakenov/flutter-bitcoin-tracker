@@ -1,5 +1,10 @@
 # Bitcoin Ticker 🤑
 
+## Demo:
+
+https://user-images.githubusercontent.com/22214915/120074530-8c3ae300-c09d-11eb-89cc-e6941bde4ecd.mov
+
+
 ## Learning objectives
 
 - How to use the DropdownButton Widget from Material design.
